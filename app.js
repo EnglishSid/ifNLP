@@ -4,8 +4,7 @@ var logger = require ('morgan');
 var bodyParser = require ('body-parser');
 var neo4j = require('neo4j-driver').v1;
 var app = express();
-var datafile = require('./files/standalone.json');
-
+//var datafile = require('./files/standalone.json');
 
 //View engine
 app.set ('views',path.join(__dirname,'views'));
@@ -17,7 +16,6 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(express.static(path.join(__dirname,'public')));
 app.use("/files", express.static(__dirname + '/files'));
 app.use("/js", express.static(__dirname + '/files/js'));
-
 
 var driver = neo4j.driver('bolt://localhost',neo4j.auth.basic('neo4j','neo4j'));
 var session=driver.session();

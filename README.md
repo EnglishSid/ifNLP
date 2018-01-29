@@ -12,11 +12,21 @@
 
 ### Package Installation
 
-from the command line : npm install
+from the command line :
+
+~~~~
+npm install
+~~~~
 
 
 ### Running prototype
 
+~~~~
 node app.js
+~~~~
+or if installed 
 
-or if installed nodemon app.js
+~~~~
+nodemon app.js
+~~~~
+

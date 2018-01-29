@@ -1,14 +1,14 @@
 {
-  "name": "nlpdev",
+  "name": "ifNLP",
   "version": "1.0.0",
-  "description": "Natural Language Processing with Neo4j",
+  "description": "BI",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/EnglishSid/NLPDev.git"
+    "url": "git+https://github.com/EnglishSid/ifNLP.git"
   },
   "keywords": [
     "neo4j"
@@ -23,7 +23,7 @@
 	"neo4j-driver":"*"
 	},
   "bugs": {
-    "url": "https://github.com/EnglishSid/NLPDev/issues"
+    "url": "https://github.com/EnglishSid/ifNLP/issues"
   },
-  "homepage": "https://github.com/EnglishSid/NLPDev#readme"
+  "homepage": "https://github.com/EnglishSid/ifNLP#readme"
 }
