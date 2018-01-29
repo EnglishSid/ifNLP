@@ -1,6 +1,3 @@
-"# ifNLP" 
-
-
 ### Client set-up
 
 1. Download and install Neo4j desktop : https://neo4j.com/download/
