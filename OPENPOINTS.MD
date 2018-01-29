@@ -6,3 +6,11 @@
     themes query exists
     need to loop around the other ideas
 
+
+### missing datasets
+
+    trends
+    industry models
+
+
+
