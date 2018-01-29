@@ -4,7 +4,7 @@
 ### Client set-up
 
 1. Download and install Neo4j desktop : https://neo4j.com/download/
-2. create new local database (any name, default user/pass)
+2. create new local database (any name, start and set the password - update your code)
 3. install git
 4. install node.js
 5. clone this repo

@@ -17,12 +17,12 @@ app.use(express.static(path.join(__dirname,'public')));
 app.use("/files", express.static(__dirname + '/files'));
 app.use("/js", express.static(__dirname + '/files/js'));
 
-var driver = neo4j.driver('bolt://localhost',neo4j.auth.basic('neo4j','neo4j'));
+var driver = neo4j.driver('bolt://localhost',neo4j.auth.basic('neo4j','password'));
 var session=driver.session();
 
 app.get('/add',function (req,res){
     session 
-    .run('MATCH(t:transcript) return t limit 25')
+    .run('MATCH(i:Idea) return i limit 25')
     .then(function(result){
         var nodeArr =[];
         result.records.forEach(function(record) {
@@ -55,12 +55,7 @@ app.post('/transcript/add',function(req, res){
     var finalTranscriptWords2 = finalTranscriptWords.replace(/\s{2,}/g," ");
     var finalTranscriptWords3 = finalTranscriptWords2.replace(/'[.,\/#!$%?\^&\*;:{}=\-_`~()]/g,"");
 
-
-    var stopWords="'also','can','2012','2014','hp','within','new','hewlett','packard','hpe','2013','2015','2016','dec','dxc','hpes','2017','via','?','.',',','a','about','above','after','again','against','all','am','an','and','any','are','aren\\'t','as','at','be','because','been','before','being','below','between','both','but','by','can\\'t','cannot','could','couldn\\'t','did','didn\\'t','do','does','doesn\\'t','doing','don\\'t','down','during','each','few','for','from','further','had','hadn\\'t','has','hasn\\'t','have','haven\\'t','having','he','he\\'d','he\\'ll','he\\'s','her','here','here\\'s','hers','herself','him','himself','his','how','how\\'s','i','i\\'d','i\\'ll','i\\'m','i\\'ve','if','in','into','is','isn\\'t','it','it\\'s','its','itself','let\\'s','me','more','most','mustn\\'t','my','myself','no','nor','not','of','off','on','once','only','or','other','ought','our','ours','ourselves','out','over','own','same','shan\\'t','she','she\\'d','she\\'ll','she\\'s','should','shouldn\\'t','so','some','such','than','that','that\\'s','the','their','theirs','them','themselves','then','there','there\\'s','these','they','they\\'d','they\\'ll','they\\'re','they\\'ve','this','those','through','to','too','under','until','up','very','was','wasn\\'t','we','we\\'d','we\\'ll','we\\'re','we\\'ve','were','weren\\'t','what','what\\'s','when','when\\'s','where','where\\'s','which','while','who','who\\'s','whom','why','why\\'s','with','won\\'t','would','wouldn\\'t','you','you\\'d','you\\'ll','you\\'re','you\\'ve','your','yours','yourself','yourselves'";
-    //stopWords+=",'hp','within','new','hewlett','packard','hpe','hp's','2013','2014','2015','2016','dec'";
-    //stopWords+=",'dxc','hpes','2017','via'";
-
-   // var stopWords="'blah'";
+    var stopWords="'also','can','via','?','.',',','a','about','above','after','again','against','all','am','an','and','any','are','aren\\'t','as','at','be','because','been','before','being','below','between','both','but','by','can\\'t','cannot','could','couldn\\'t','did','didn\\'t','do','does','doesn\\'t','doing','don\\'t','down','during','each','few','for','from','further','had','hadn\\'t','has','hasn\\'t','have','haven\\'t','having','he','he\\'d','he\\'ll','he\\'s','her','here','here\\'s','hers','herself','him','himself','his','how','how\\'s','i','i\\'d','i\\'ll','i\\'m','i\\'ve','if','in','into','is','isn\\'t','it','it\\'s','its','itself','let\\'s','me','more','most','mustn\\'t','my','myself','no','nor','not','of','off','on','once','only','or','other','ought','our','ours','ourselves','out','over','own','same','shan\\'t','she','she\\'d','she\\'ll','she\\'s','should','shouldn\\'t','so','some','such','than','that','that\\'s','the','their','theirs','them','themselves','then','there','there\\'s','these','they','they\\'d','they\\'ll','they\\'re','they\\'ve','this','those','through','to','too','under','until','up','very','was','wasn\\'t','we','we\\'d','we\\'ll','we\\'re','we\\'ve','were','weren\\'t','what','what\\'s','when','when\\'s','where','where\\'s','which','while','who','who\\'s','whom','why','why\\'s','with','won\\'t','would','wouldn\\'t','you','you\\'d','you\\'ll','you\\'re','you\\'ve','your','yours','yourself','yourselves'";
 
    console.log("-----------------------");
    console.log("stopwords");
@@ -80,39 +75,39 @@ app.post('/transcript/add',function(req, res){
     WordImportQuery+="ON CREATE SET r.count = 1 ";
     WordImportQuery+="ON MATCH SET r.count = r.count+1 ";
     WordImportQuery+="WITH w1,w2 ";
-    WordImportQuery+="Match (p:transcript) ";
-    WordImportQuery+="WHERE p.name='" + transcriptName + "' ";
-    WordImportQuery+="MERGE (p)-[r1:INCLUDED]->(w1) ";
+    WordImportQuery+="Match (i:Idea) ";
+    WordImportQuery+="WHERE i.name='" + transcriptName + "' ";
+    WordImportQuery+="MERGE (i)-[r1:INCLUDED]->(w1) ";
 	WordImportQuery+="ON CREATE SET r1.count = 1 ";
 	WordImportQuery+="ON MATCH SET r1.count = r1.count+1 ";
-    WordImportQuery+="MERGE (p)-[r2:INCLUDED]->(w2) ";
+    WordImportQuery+="MERGE (i)-[r2:INCLUDED]->(w2) ";
     WordImportQuery+="ON CREATE SET r2.count = 1 ";
     WordImportQuery+="ON MATCH SET r2.count = r2.count+1 ";
 
-
-    var WordNetQuery = "WITH split(tolower('" + finalTranscriptWords2 + "'), ' ') AS words ";
-    WordNetQuery += "WITH [w in words WHERE NOT w IN ["+ stopWords +"]] AS text ";
-    WordNetQuery +="UNWIND range (0,size(text)-2) as i ";
-    WordNetQuery +="MATCH (n:WN_Word {word:text[i]}) ";
-    WordNetQuery +="MATCH (w1:Word {name:text[i]}) ";
-    WordNetQuery +="MERGE (w1)-[:WN_LINK]->(n);";
+   // Removed 
+   // var WordNetQuery = "WITH split(tolower('" + finalTranscriptWords2 + "'), ' ') AS words ";
+   // WordNetQuery += "WITH [w in words WHERE NOT w IN ["+ stopWords +"]] AS text ";
+   // WordNetQuery +="UNWIND range (0,size(text)-2) as i ";
+   // WordNetQuery +="MATCH (n:WN_Word {word:text[i]}) ";
+   // WordNetQuery +="MATCH (w1:Word {name:text[i]}) ";
+   // WordNetQuery +="MERGE (w1)-[:WN_LINK]->(n);";
     
     
     var AuthorCreate = "MERGE (n:Person {name:'" + TranscriptAuthor + "'}); "; 
 
-    var AuthorImport = "MATCH (t:transcript {name:'" + transcriptName + "'}) ";
+    var AuthorImport = "MATCH (i:Idea {name:'" + transcriptName + "'}) ";
     AuthorImport +="MATCH (p:Person {name:'"+ TranscriptAuthor + "'}) ";
-    AuthorImport +="MERGE  (t)-[:AUTHOR]->(p) ";
+    AuthorImport +="MERGE  (i)<-[:HAS]-(p) ";
 
-//first create the transcript node    
+//first create the idea node    
 session
-    .run('CREATE (t:transcript {name:{transcriptParam},description:{descriptionParam},fulltext:{TranscriptTextParam}}) RETURN t.name', {transcriptParam:transcriptName,descriptionParam:transcriptDescription,TranscriptTextParam:TranscriptWords})
+    .run('CREATE (i:Idea {name:{transcriptParam},description:{descriptionParam},fulltext:{TranscriptTextParam}}) RETURN i.name', {transcriptParam:transcriptName,descriptionParam:transcriptDescription,TranscriptTextParam:TranscriptWords})
     .then(function (result){
         console.log("transcript created");
         console.log(WordImportQuery);
-        console.log("Wordnet Query");
-        console.log("=============");
-        console.log(WordNetQuery);
+        //console.log("Wordnet Query");
+        // console.log("=============");
+        // console.log(WordNetQuery);
     })
     .catch(function(err){
         console.log(err);
@@ -150,14 +145,14 @@ session
     });
 
 //connect towordnet 
-    session
-   .run(WordNetQuery)
-    .then(function (result){
-       console.log("Connected to WordNet");
-    })
-    .catch(function(err){
-        console.log(err);
-    });
+//    session
+//   .run(WordNetQuery)
+//    .then(function (result){
+//       console.log("Connected to WordNet");
+//    })
+//    .catch(function(err){
+//        console.log(err);
+//    });
 
 
 //run the clean queries
