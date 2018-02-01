@@ -32,7 +32,7 @@ app.get('/add',function (req,res){
                     description: record._fields[0].properties.description,
                 });
         }); 
-        res.render('add',{movies: nodeArr});
+        res.render('add',{idea: nodeArr});
     })
     .catch(function(err){
         console.log(err)
@@ -186,7 +186,7 @@ app.get('/', function (req, res) {
 
 app.get('/review', function (req, res) {
  session 
-    .run('MATCH(t:transcript) return t')
+    .run('MATCH(i:Idea) return i')
     .then(function(result,returnVar){
         var nodeArr =[];
         result.records.forEach(function(record) {
@@ -230,7 +230,7 @@ app.post('/review2', function(req,res){
     }
     else
     {
-        TopWordsQuery ="match (t:transcript{name:'"+ transcriptName +"'})-[r:INCLUDED]-(w:Word) return w.name as Word, r.count as Count order by r.count desc LIMIT 25";
+        TopWordsQuery ="match (i:Idea{name:'"+ transcriptName +"'})-[r:INCLUDED]-(w:Word) return w.name as Word, r.count as Count order by r.count desc LIMIT 25";
         TopThemes ="MATCH p=(:Word)-[r:NEXT*1..3]->(:Word) WITH p WITH reduce(s=0,x IN relationships(p) | s + x.count) AS total, p WITH nodes(p) AS text, 1.0*total/size(nodes(p)) as weight RETURN extract(x IN text | x.name) AS phrase, weight ORDER BY weight DESC LIMIT 10";
     }
 
